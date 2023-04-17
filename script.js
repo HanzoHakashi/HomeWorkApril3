@@ -1,69 +1,50 @@
 
 
-const likeBtn = document.getElementById('like');
-let isLiked = false;
+const form = document.getElementById('post-form');
 
-const likeClick = () => {
-  if (!isLiked) {
-    likeBtn.classList.add('isLiked');
-    likeBtn.innerHTML = '<i class="bi bi-heart-fill"></i>';
-    likeBtn.style.color = 'red';
-    isLiked = true;
-  } else {
-    likeBtn.classList.remove('isLiked');
-    likeBtn.innerHTML = '<i class="bi bi-heart"></i>';
-    likeBtn.style.color = 'gray';
-    isLiked = false;
-  }
-};
-likeBtn.addEventListener('click', likeClick);
+form.addEventListener('submit', (event) => {
+  event.preventDefault(); 
+
+  const formData = new FormData(form);
 
 
-function likeImage(image) {
-  var postDiv = image.parentElement;
-  var likeIcon = postDiv.querySelector('.likeIcon');
-  if (!likeIcon) {
-    likeIcon = document.createElement('div');
-    likeIcon.classList.add('likeIcon');
-    likeIcon.innerHTML = '<i class="bi bi-heart-fill"></i>';
-    
-    postDiv.appendChild(likeIcon);
-  }
-   likeBtn.classList.add('isLiked');
-   likeBtn.innerHTML = '<i class="bi bi-heart-fill"></i>';
-   likeBtn.style.color = 'red';
-   isLiked = true;
-  likeIcon.style.color = 'red';
-  likeIcon.style.top = (image.offsetHeight / 2 - likeIcon.offsetHeight / 2) + 'px';
-  likeIcon.style.left = (image.offsetWidth / 2 - likeIcon.offsetWidth / 2) + 'px';
-  likeIcon.classList.add('show');
-  setTimeout(() => {
-    likeIcon.classList.remove('show');
-  }, 1000);
-}
-
-const bookmarkBtn = document.getElementById('bookmark');
-let isBookmarked = false;
-
-const bookmarkClick = () => {
-  if (!isBookmarked) {
-    bookmarkBtn.classList.add('isBookmarked');
-    bookmarkBtn.innerHTML = '<i class="bi bi-bookmark-fill"></i>';
-    isBookmarked = !isBookmarked;
-  } else {
-    bookmarkBtn.classList.remove('isBookmarked');
-    bookmarkBtn.innerHTML = '<i class="bi bi-bookmark"></i>';
-    isBookmarked = !isBookmarked;
-  }
-};
-
-bookmarkBtn.addEventListener('click', bookmarkClick);
-
-const splashScreen = document.getElementById('splash-screen');
-const loginButton = document.getElementById('login-button');
-
-loginButton.addEventListener('click', () => {
-  splashScreen.style.display = 'none';
+  fetch('http://localhost:2727/publication/submit-post', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (response.ok) {
+        alert('Post submitted successfully!');
+        form.reset();
+      } else {
+        throw new Error('Error submitting post');
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      alert('Error submitting post');
+    });
 });
 
+ const commentToggleBtn = document.querySelector('.comment-toggle');
+ const commentForm = document.querySelector('.comment-form');
 
+ commentToggleBtn.addEventListener('click', () => {
+   commentForm.style.display = commentForm.style.display === 'none' ? 'block' : 'none';
+ });
+
+ commentForm.addEventListener('submit', (event) => {
+   event.preventDefault();
+
+   const formData = new FormData(commentForm);
+   const commentText = formData.get('commentText');
+
+   
+   const commentsList = document.querySelector('.comments-list');
+   const commentItem = document.createElement('li');
+   commentItem.innerText = commentText;
+   commentsList.appendChild(commentItem);
+
+   
+   commentForm.reset();
+ });
